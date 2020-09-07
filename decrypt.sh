@@ -1,10 +1,7 @@
 #!/bin/sh
 
 sudo apt-get update --assume-yes &&
-    sudo apt-get install --assume-yes tar gzip gnupg gnupg2 git pinentry-qt genisoimage dvdisaster fuseiso &&
-    sudo modprobe fuse &&
-    sudo addgroup fuse &&
-    sudo adduser $(whoami) fuse &&
+    sudo apt-get install --assume-yes tar gzip gnupg gnupg2 git pinentry-qt genisoimage dvdisaster &&
     cd $( mktemp -d ) &&
     cp "${1}" private.tar.gz.gpg.iso &&
     if ! dvdisaster --image private.tar.gz.gpg.iso --ecc "${2}" --test
@@ -12,11 +9,11 @@ sudo apt-get update --assume-yes &&
 	dvdisaster --image private.tar.gz.gpg.iso --ecc "${2}" --fix &&
 	    true
     fi &&
-    echo fuseiso -p $(pwd)/private.tar.gz.gpg.iso mount -f &&
-    fuseiso -p private.tar.gz.gpg.iso mount -f &&
-    echo gpg --output private.tar.gz --decrypt mount/private.tar.gz.gpg &&
+    mkdir mount &&
+    sudo mount private.tar.gz.gpg.iso mount &&
     gpg --output private.tar.gz --decrypt mount/private.tar.gz.gpg &&
-    umount mount &&
+    sudo umount mount &&
     gunzip --to-stdout private.tar.gz > private.tar &&
-    tar --extract --file private.tar &&
+    mkdir "${3}" &&
+    tar --extract --file private.tar --directory "${3}" &&
     true
