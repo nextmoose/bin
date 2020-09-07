@@ -15,5 +15,11 @@ WORK_DIR=$( mktemp -d ) &&
     gpgconf --reload gpg-agent &&
     sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/verification" &&
     diff -qrs "${WORK_DIR}/private" "${WORK_DIR}/verification" &&
+    sed -e "s#AA#BB#" -e "w${WORK_DIR}/corruption-01.iso" "${WORK_DIR}/private.tar.gz.gpg.iso" | grep "AA" | wc --lines | cut --fields 1 --delimiter " " &&
+    sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/corruption-01.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/corruption-01" &&
+    diff -qrs "${WORK_DIR}/private" "${WORK_DIR}/corruption-01" &&
+    sed -e "s#A#B#" -e "w${WORK_DIR}/corruption-02.iso" "${WORK_DIR}/private.tar.gz.gpg.iso" | grep "AA" | wc --lines | cut --fields 1 --delimiter " " &&
+    echo TOO MUCH CORRUPTION &&
+    ! sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/corruption-02.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/corruption-02" &&
     echo "${WORK_DIR}" &&
     true
