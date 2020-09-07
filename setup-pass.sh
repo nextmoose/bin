@@ -3,7 +3,11 @@
 sudo apt-get update --assume-yes &&
     sudo apt-get install --assume-yes pass gnupg gnupg2 git pinentry-qt &&
     sudo apt install --assume-yes raspberrypi-kernel raspberrypi-kernel-headers &&
-    curl -sSL https://get.docker.com | sh &&
+    if ! which docker
+    then
+	curl -sSL https://get.docker.com | sh &&
+	    true
+    fi &&
     sudo usermod -aG docker pi &&
     sudo apt-get install --assume-yes emacs &&
     rm --recursive --force ~/.gnupg ~/.password-store ~/.ssh ~/bin/.git/hooks/post-commit &&
@@ -13,9 +17,6 @@ sudo apt-get update --assume-yes &&
     gpg2 --import-ownertrust ~/private/gpg2-ownertrust.asc &&
     git -C ~/bin config user.name "Emory Merryman" &&
     git -C ~/bin config user.email "emory.merryman@gmail.com" &&
-    git -C ~/bin remote add personal github.com:nextmoose/bin.git &&
-    git -C ~/bin fetch personal scratch/47a12c84-f151-11ea-98ff-d3a850417752 &&
-    git -C ~/bin checkout scratch/47a12c84-f151-11ea-98ff-d3a850417752 &&
     ( cat > ~/bin/.git/hooks/post-commit <<EOF
 #!/bin/sh
 
@@ -72,4 +73,10 @@ true
 EOF
     ) &&
     chmod 0500 ~/.password-store/.git/hooks/post-commit &&
+    if ! git -C ~/bin remote add personal github.com:nextmoose/bin.git
+    then
+	git -C ~/bin fetch personal scratch/47a12c84-f151-11ea-98ff-d3a850417752 &&
+	    git -C ~/bin checkout scratch/47a12c84-f151-11ea-98ff-d3a850417752 &&
+	    true
+    fi &&
     true
