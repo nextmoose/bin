@@ -7,7 +7,7 @@ WORK_DIR=$( mktemp -d ) &&
     tar --verbose --create --file "${WORK_DIR}/private.tar" --directory "${WORK_DIR}/private" . &&
     gzip -9 --to-stdout "${WORK_DIR}/private.tar" > "${WORK_DIR}/private.tar.gz" &&
     gpg --output "${WORK_DIR}/private.tar.gz.gpg" --armor --symmetric "${WORK_DIR}/private.tar.gz" &&
-    genisoimage -o "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg" &&
+    genisoimage -r -o "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg" &&
     dvdisaster --image "${WORK_DIR}/private.tar.gz.gpg.iso" --ecc "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" --create &&
     sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" verification &&
     true
