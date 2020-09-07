@@ -12,7 +12,6 @@ WORK_DIR=$( mktemp -d ) &&
     echo ENTER THE WRONG PASSWORD &&
     gpgconf --reload gpg-agent &&
     ! sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/verification" &&
-    gpgconf --reload gpg-agent &&
     sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/verification" &&
     diff -qrs "${WORK_DIR}/private" "${WORK_DIR}/verification" &&
     sed -e "s#AA#BB#" -e "w${WORK_DIR}/corruption-01.iso" "${WORK_DIR}/private.tar.gz.gpg.iso" | grep "AA" | wc --lines | cut --fields 1 --delimiter " " &&
