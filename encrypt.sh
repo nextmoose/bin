@@ -9,6 +9,9 @@ WORK_DIR=$( mktemp -d ) &&
     gpg --output "${WORK_DIR}/private.tar.gz.gpg" --armor --symmetric "${WORK_DIR}/private.tar.gz" &&
     genisoimage -r -o "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg" &&
     dvdisaster --image "${WORK_DIR}/private.tar.gz.gpg.iso" --ecc "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" --create &&
+    echo ENTER THE WRONG PASSWORD &&
+    gpgconf --reload gpg-agent &&
+    ! sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/verification" &&
     gpgconf --reload gpg-agent &&
     sh "$( dirname "${0}" )/decrypt.sh" "${WORK_DIR}/private.tar.gz.gpg.iso" "${WORK_DIR}/private.tar.gz.gpg.iso.ecc" "${WORK_DIR}/verification" &&
     diff -qrs "${WORK_DIR}/private" "${WORK_DIR}/verification" &&
