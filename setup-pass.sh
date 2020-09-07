@@ -6,12 +6,28 @@ sudo apt-get update --assume-yes &&
     curl -sSL https://get.docker.com | sh &&
     sudo usermod -aG docker pi &&
     sudo apt-get install --assume-yes emacs &&
-    rm --recursive --force ~/.gnupg ~/.password-store ~/.ssh &&
+    rm --recursive --force ~/.gnupg ~/.password-store ~/.ssh ~/bin/.git/hooks/post-commit &&
     gpg --batch --import ~/private/gpg-private-keys.asc &&
     gpg --import-ownertrust ~/private/gpg-ownertrust.asc &&
     gpg2 --import ~/private/gpg2-private-keys.asc &&
     gpg2 --import-ownertrust ~/private/gpg2-ownertrust.asc &&
+    git -C ~/bin config user.name "Emory Merryman" &&
+    git -C ~/bin config user.email "emory.merryman@gmail.com" &&
     git -C ~/bin remote add personal github.com:nextmoose/bin.git &&
+    git -C ~/bin fetch personal scratch/47a12c84-f151-11ea-98ff-d3a850417752 &&
+    git -C ~/bin checkout scratch/47a12c84-f151-11ea-98ff-d3a850417752 &&
+    ( cat > ~/bin/.git/hooks/post-commit <<EOF
+#!/bin/sh
+
+while ! git push personal HEAD
+do
+    sleep 1s &&
+        true
+done &&
+    true
+EOF
+    ) &&
+    chmod 0500 ~/bin/.git/hooks/post-commit &&
     mkdir ~/.password-store &&
     git -C ~/.password-store init &&
     git -C ~/.password-store remote add secrets https://github.com/nextmoose/secrets.git &&
